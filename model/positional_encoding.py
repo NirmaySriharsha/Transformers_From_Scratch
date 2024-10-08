@@ -48,6 +48,8 @@ class PositionalEncoder(nn.Module):
         #PE(pos, 2i+1)
         positional_encoding[:, 1::2] = torch.cos(pos_numerator/denominator)
 
+        positional_encoding = positional_encoding.unsqueeze(1) #dimensions (1, seq_length, embedding_dims) for broadcasting
+        
         self.positional_encoding = positional_encoding
 
         #We store this in the buffer for easy retrieval, since, again, we can keep it statically stored as we won't learn it
