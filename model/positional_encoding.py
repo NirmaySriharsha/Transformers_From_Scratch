@@ -10,6 +10,7 @@ We simply add the positional encoding to the original vector to augment it with 
 
 import torch
 import torch.nn as nn
+import math
 
 class PositionalEncoder(nn.Module):
     """Adds Positional Encoding to embedded sentences"""
@@ -38,7 +39,7 @@ class PositionalEncoder(nn.Module):
 
         #Create a vector corresponding to the denominator inside the trig: 10000**(2i/embedding_dims)
         denominator_exponent = torch.arange(0, embedding_dims, 2).float()/embedding_dims
-        denominator = torch.exp(denominator_exponent*torch.log(10000)) #We take exp(log(..)) to prevent underflow
+        denominator = torch.exp(denominator_exponent*math.log(10000)) #We take exp(log(..)) to prevent underflow
         #Create the numerator pos in the equation inside the trig
         pos_numerator = torch.arange(0, sequence_length, dtype = torch.float).unsqueeze(1) #shape (sequence_length, 1)
 
@@ -53,7 +54,7 @@ class PositionalEncoder(nn.Module):
         self.positional_encoding = positional_encoding
 
         #We store this in the buffer for easy retrieval, since, again, we can keep it statically stored as we won't learn it
-        self.register_buffer('positional_encoding', positional_encoding)
+        #self.register_buffer('positional_encoding', positional_encoding)
 
 
     def forward(self, x):

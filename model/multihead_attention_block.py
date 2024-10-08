@@ -23,11 +23,11 @@ class MultiHeadAttention(nn.Module):
         self.num_heads = num_heads
         self.dropout = dropout
         self.mask = mask
+        #Given embedding_dims and num_heads, the dims of each head is
+        self.head_dims = embedding_dims // num_heads
 
         assert self.head_dims * self.num_heads == self.embedding_dims, "Number of heads must be a divisor of embedding_dims"
 
-        #Given embedding_dims and num_heads, the dims of each head is
-        self.head_dims = embedding_dims // num_heads
 
         """Common point of misconception here:
         Technically we need num_heads number of projection matrices W_Q, W_K, W_V to project the queries, keys and values

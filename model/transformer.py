@@ -14,9 +14,10 @@ class Transformer(nn.Module):
     def __init__(self, source_embedding_layer_params: dict, source_positional_encoder_params: dict, encoder_params: dict,
                  target_embedding_layer_params: dict, target_positional_encoder_params: dict, decoder_params: dict, output_layer_params: dict) -> None:
         """Abstracting params as dicts for ease of reading - in practice each of these dicts will have plenty of overlap"""
-
+        
+        super().__init__()
         self.source_embedding_layer = EmbeddingLayer(**source_embedding_layer_params)
-        self.source_positional_encoder = PositionalEncoder(**source_embedding_layer_params)
+        self.source_positional_encoder = PositionalEncoder(**source_positional_encoder_params)
         self.encoder = Encoder(**encoder_params)
         self.target_embedding_layer = EmbeddingLayer(**target_embedding_layer_params)
         self.target_positional_encoder = PositionalEncoder(**target_positional_encoder_params)
@@ -40,6 +41,7 @@ class Transformer(nn.Module):
         self.target_positional_encoder = target_positional_encoder
         self.decoder = decoder
         self.output_layer = output_layer
+        self.encoder_output = None
 
     def encode(self, x):
         """Embed + Positional Encode + Run through encoder
@@ -57,6 +59,7 @@ class Transformer(nn.Module):
         #shape is now (n_batch, sequence_length, embed_dims)
         encoded = self.encoder(positionally_encoded_embedding)
         #shape is now (n_batch, sequence_length, embed_dims)
+        self.encoder_output = encoded
         return encoded
     
     def decode(self, x, encoder_output):
@@ -79,8 +82,9 @@ class Transformer(nn.Module):
     
     def forward(self, x):
         """Forward pass of the transformer"""
-        encoder_output = self.encode(x)
-        decoder_output = self.decode(x, encoder_output)
+        if self.encoder_output is None: #No need to recompute encoder output per new token generated
+            self.sencoder_output = self.encode(x)
+        decoder_output = self.decode(x, self.encoder_output)
         output = self.output_layer(decoder_output)
         return output
         
