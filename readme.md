@@ -12,13 +12,14 @@ Things to be implemented:
 
 ~~2. Positional Encodings~~
 
-3. Multi Head Attention
+~~3. Multi Head Attention~~
+    a. Masking capability. 
 
 ~~4. Layer Normalization~~
 
 5. Skip Connections
 
-6. Feed Forward Layers
+~~6. Feed Forward Layers~~
 
 7. Softmax Layer
 
