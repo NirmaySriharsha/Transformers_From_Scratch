@@ -23,10 +23,10 @@ class EmbeddingLayer(nn.Module):
         """Return the embedding of the token
 
         Args:
-            x (torch.ndarray): Input tokens of shape (batch, vocab_size)
+            x (torch.tensor): Input tokens of shape (batch, vocab_size)
         
         Returns: 
-            torch.ndarray: Embedding of shape (batch, embedding_size)
+            torch.tensor: Embedding of shape (batch, embedding_size)
         """
         
         embedding_prescaled = self.embedding_layer(x)

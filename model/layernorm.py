@@ -26,11 +26,11 @@ class LayerNormalizer(nn.Module):
         makes this customizable which is why we we'll defer to that in the rest of the code.
 
         Args:
-            x (torch.ndarray): minibatch layer activations being normalized.
+            x (torch.tensor): minibatch layer activations being normalized.
             Shape (batch, sentence_length, features)
 
         Returns:
-            torch.ndarray: Layer normalized output of shape (batch, sentence_length, 1)
+            torch.tensor: Layer normalized output of shape (batch, sentence_length, 1)
         """
 
         mean = x.mean(dim = -1, keepdim = True) #keepdim doesn't remove that dimension (but makes it 1 deep obviously)

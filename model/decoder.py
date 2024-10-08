@@ -23,9 +23,19 @@ class Decoder(nn.Module):
         """In case we'd rather decide the decoder layers ourselves"""
         self.layers = layers
     
-    def forward(self, x: torch.tensor):
+    def forward(self, x: torch.tensor, encoder_keys: torch.tensor, encoder_values: torch.tensor):
+        """Forward pass of decoder
+
+        Args:
+            x (torch.tensor): input of shape (n_batch, seq_length, embedding_dims)
+            encoder_keys (torch.tensor): Output of encoder for cross attention (n_batch, seq_length, embedding_dims)
+            encoder_values (torch.tensor): Output of encoder for cross attention (n_batch, seq_length, embedding_dims)
+
+        Returns:
+            torch.tensor: Decoder Output
+        """
         out = x
         for layer in self.layers:
-            out = layer(out)
+            out = layer(out, encoder_keys, encoder_values)
         out = self.layer_norm(out)
         return out
