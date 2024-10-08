@@ -28,4 +28,4 @@ Things to be implemented:
 
 ~~9. Chain Encoder Blocks to create Encoder and Decoder Blocks to create Decoder~~
 
-10. Chain Encoder, Decoder, Embedding Layers and Output Layers to create Transformer
+~~10. Chain Encoder, Decoder, Embedding Layers and Output Layers to create Transformer~~
