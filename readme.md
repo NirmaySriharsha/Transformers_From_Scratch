@@ -22,10 +22,10 @@ Things to be implemented:
 
 ~~6. Feed Forward Layers~~
 
-7. Output Layers
+~~7. Output Layers~~
 
 ~~8. Chain layers to create Encoder Blocks and Decoder Blocks~~
 
 ~~9. Chain Encoder Blocks to create Encoder and Decoder Blocks to create Decoder~~
 
-10. Chain Encoder, Decoder, Embedding Layers and Projection Layers to create Transformer
+10. Chain Encoder, Decoder, Embedding Layers and Output Layers to create Transformer
