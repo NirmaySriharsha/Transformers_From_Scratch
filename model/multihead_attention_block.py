@@ -7,12 +7,22 @@ import math
 class MultiHeadAttention(nn.Module):
     """Multi Headed Attention Block"""
 
-    def __init__(self, embedding_dims: int, num_heads: int, dropout: float):
-        """Initialize MHA"""
+    def __init__(self, embedding_dims: int, num_heads: int, dropout: float, mask: torch.tensor):
+        """
+        Initialize MHA
+        Args:
+            embedding_dims (int): Dimension of word embeddings
+            num_heads (int): How many heads in this attention blocks
+            dropout (int): Parameter for dropout layer
+            mask (torch.tensor): Mask for masked attention. Ex: for decoder blocks this would prevent attending to future generated words
+            For encoder blocks we pad the input to ensure shapes match up before sending through the block and we don't want to compute
+            on this padding so we create a mask. 
+        """
         super().__init__()
         self.embedding_dims = embedding_dims
         self.num_heads = num_heads
         self.dropout = dropout
+        self.mask = mask
 
         assert self.head_dims * self.num_heads == self.embedding_dims, "Number of heads must be a divisor of embedding_dims"
 
@@ -35,17 +45,17 @@ class MultiHeadAttention(nn.Module):
         self.W_out = nn.Linear(embedding_dims, embedding_dims) 
 
     @staticmethod #In case I want to see attention scores down the line
-    def attention_score(self, queries, keys, values, dropout=False):
+    def attention_score(self, queries, keys, values, mask, dropout=False):
         """Calculates attention given queries, keys, values. 
         Calculation occurs parallel across all heads simultaneously - i.e, the main strength of transformers.
 
         Args:
-            queries (torch.ndarray): Queries per head, shape (n_batch, num_heads, seq_length, head_dims)
-            keys (torch.ndarray): Keys per head, shape (n_batch, num_heads, seq_length, head_dims)
-            values (torch.ndarray): Values per head, shape (n_batch, num_heads, seq_length, head_dims)
+            queries (torch.tensor): Queries per head, shape (n_batch, num_heads, seq_length, head_dims)
+            keys (torch.tensor): Keys per head, shape (n_batch, num_heads, seq_length, head_dims)
+            values (torch.tensor): Values per head, shape (n_batch, num_heads, seq_length, head_dims)
 
         Returns:
-            torch.ndarray: Attention per Q, K, V triad per head of shape (n_batch, num_heads, seq_length, head_dims)
+            torch.tensor: Attention per Q, K, V triad per head of shape (n_batch, num_heads, seq_length, head_dims)
         """
 
         #As per the formula we do QK^T but since the shapes are actually (n_batch, num_heads, seq_length, head_dims)
@@ -54,6 +64,12 @@ class MultiHeadAttention(nn.Module):
         #scale by sqrt(head_dims) for numerical stability
         head_dims = queries.shape[-1] #Since I made this a static method I'll avoid invoking self.__ to get values
         dot_product_attention /= math.sqrt(head_dims)
+
+        #masking works as follows - replace original with  (-infinity) where mask says there should be nothing. Then in the softmax step
+        # e^(-infinity) = 0
+        if mask is not None: 
+            dot_product_attention.masked_fill_(mask == 0, -1e9)
+
         #softmax it across the head_dims space
         dot_product_attention = dot_product_attention.softmax(dim = -1)
         #shape is now (n_batch, num_heads, seq_length, seq_length) where the last two entries gives you the attention score
@@ -67,16 +83,17 @@ class MultiHeadAttention(nn.Module):
         #shape is back to (n_batch, num_heads, seq_length,  head_dims) (project it back into the head_dims space)
         return attention, dot_product_attention #we return dot_product_attention as well since it's a useful thing to be able to examine
 
-    def forward(self, queries, keys, values):
+    def forward(self, queries, keys, values, custom_mask=None):
         """Forward pass!
 
         Args:
-            queries (torch.ndarray): Queries of shape (n_batch, seq_length, embedding_dims) 
-            keys (torch.ndarray): Keys of shape (n_batch, seq_length, embedding_dims) 
-            values (torch.ndarray): Values of shape (n_batch, seq_length, embedding_dims) 
+            queries (torch.tensor): Queries of shape (n_batch, seq_length, embedding_dims) 
+            keys (torch.tensor): Keys of shape (n_batch, seq_length, embedding_dims) 
+            values (torch.tensor): Values of shape (n_batch, seq_length, embedding_dims) 
+            custom_mask (torch.tensor): Mask to apply on attention scores either for padding (encoder) or to prevent 'peeking' (decoder)
 
         Returns:
-            torch.ndarray: Output of attention block of shape (n_batch, seq_length, embedding_dims)
+            torch.tensor: Output of attention block of shape (n_batch, seq_length, embedding_dims)
         """
         #Pass through transformation matrix
         queries = self.W_queries(queries)
@@ -90,7 +107,7 @@ class MultiHeadAttention(nn.Module):
         values = self._reshape_qkv(values)
 
         #calculate attention
-        attention = self.attention_score(queries, keys, values)
+        attention = self.attention_score(queries, keys, values, mask=custom_mask if custom_mask else self.mask)
         #shape of (n_batch, num_head, seq_length, head_dims)
         #Concatenate it to get shape (n_batch, seq_length, embedding_dims) once again. 
         #first shuffle back num_head and seq_length -> new shape is (n_batch, seq_length, num_head, head_dims)
@@ -110,11 +127,11 @@ class MultiHeadAttention(nn.Module):
         """Reshapes vectors (intended to be queries, keys and values) into shapes compatible for each head
 
         Args:
-            input (torch.ndarray): A key, query or value of shape (n_batch, sequence_length, embedding_dims) concatenated num_heads times
+            input (torch.tensor): A key, query or value of shape (n_batch, sequence_length, embedding_dims) concatenated num_heads times
             across each head_dims subspace
 
         Returns:
-            torch.ndarray: key, query, or value split across each head_dims subspace. 
+            torch.tensor: key, query, or value split across each head_dims subspace. 
         """
         #Input is of shape (n_batch, sequence_length, embedding_dims). We want (n_batch, sequence_length, num_heads, head_dims)
         input = input.view(input.shape[0], input.shape[1], self.num_heads, self.head_dims)

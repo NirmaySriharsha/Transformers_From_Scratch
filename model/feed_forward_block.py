@@ -28,10 +28,10 @@ class FeedForwardBlock(nn.Module):
         """Forward pass of feed forward block
 
         Args:
-            x (torch.ndarray): Output of attention block. Size of (n_batch, sequence_length, embedding_dims)
+            x (torch.tensor): Output of attention block. Size of (n_batch, sequence_length, embedding_dims)
 
         Returns:
-            torch.ndarray: Forward output of size (n_batch, sequence_length, embedding_dims)
+            torch.tensor: Forward output of size (n_batch, sequence_length, embedding_dims)
         """
         out = self.linear_1(x) #out now has dims (n_batch, sequence_length, expansion_dims)
         out = self.relu(out)

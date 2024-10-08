@@ -13,7 +13,7 @@ class LayerNormalizer(nn.Module):
         """Create Layer Normalizer. Beta is the intercept and Gamma is the scaling factor. 
 
         Args:
-            features (int): Number of features per element in the minibatch
+            features (int): Number of features per element in the minibatch, will be embedding_dims for most of the remainder. 
             eps (float, optional): Padding factor to prevent division by 0 erorrs/overflow. Defaults to 10**-6.
         """
         super().__init__()

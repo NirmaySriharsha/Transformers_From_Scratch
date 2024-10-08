@@ -13,18 +13,19 @@ Things to be implemented:
 ~~2. Positional Encodings~~
 
 ~~3. Multi Head Attention~~
-    a. Masking capability. 
+
+\t ~~a. Masking capability.~~
 
 ~~4. Layer Normalization~~
 
-5. Skip Connections
+~~5. Skip Connections~~
 
 ~~6. Feed Forward Layers~~
 
-7. Softmax Layer
+7. Output Layers
 
-8. Chain layers to create Encoder Blocks and Decoder Blocks
+~~8. Chain layers to create Encoder Blocks and Decoder Blocks~~
 
-9. Chain Encoder Blocks to create Encoder and Decoder Blocks to create Decoder
+~~9. Chain Encoder Blocks to create Encoder and Decoder Blocks to create Decoder~~
 
 10. Chain Encoder, Decoder, Embedding Layers and Projection Layers to create Transformer
