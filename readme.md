@@ -29,3 +29,7 @@ Things to be implemented:
 ~~9. Chain Encoder Blocks to create Encoder and Decoder Blocks to create Decoder~~
 
 ~~10. Chain Encoder, Decoder, Embedding Layers and Output Layers to create Transformer~~
+
+11. Instantiation script with default parameters (make sure everything works)
+
+12. Simple end to end use case (data prep to training to inference)
