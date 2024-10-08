@@ -14,7 +14,7 @@ Things to be implemented:
 
 ~~3. Multi Head Attention~~
 
-\t ~~a. Masking capability.~~
+   ~~a. Masking capability.~~
 
 ~~4. Layer Normalization~~
 
