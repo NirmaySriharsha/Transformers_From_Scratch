@@ -101,7 +101,7 @@ class MultiHeadAttention(nn.Module):
         values = self.W_values(keys)
         #Each now has the shape (n_batch, seq_length, embedding_dims)
         #But we need to have shape (n_batch, seq_length, num_heads, head_dims) or better yet
-        #(n_batch, head_dims, seq_length, num_heads) (for conceptual clarity as we operate on the whole sequence for each head)
+        #(n_batch, num_heads, seq_length, head_dims) (for conceptual clarity as we operate on the whole sequence for each head)
         queries = self._reshape_qkv(queries)
         keys = self._reshape_qkv(keys)
         values = self._reshape_qkv(values)

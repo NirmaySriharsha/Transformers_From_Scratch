@@ -71,7 +71,7 @@ class Transformer(nn.Module):
         #shape is now (n_batch, sequence_length, embed_dims)
 
         #Running through decoder block requires encoder ouput for cross attention
-        decoded = self.decoder(x, encoder_output, encoder_output)
+        decoded = self.decoder(positionally_encoded_embedding, encoder_output, encoder_output)
         #shape is now (n_batch, sequence_length, embed_dims)
         return decoded
     
